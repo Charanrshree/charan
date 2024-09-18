@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-# Pull the Docker image from Docker Hub
-docker pull charanshree/charan:latest
+# Remove stopped containers older than 24 hours
+sudo docker container prune -f --filter "until=24h"
 
-# Run the Docker image as a container
-docker run -d -p 5000:5000 charanshree/charan:latest
+# Remove unused images
+sudo docker image prune -a -f
