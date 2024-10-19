@@ -2,10 +2,10 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: CloudFormation Template to create 2 VPCs, EC2 instances in private subnets, and VPC peering in us-east-1.
 
 Parameters:
-  KeyPair:
+  KeyPair: 
     Description: The EC2 Key Pair for SSH access.
     Type: String
-    Default: awslogin.pem  # Ensure this key exists in the region.
+    Default: awslogin # Ensure this key exists in the region.
 
 Resources:
   # Step 1: Create VPC1 with public and private subnets
