@@ -9,7 +9,35 @@ Parameters:
     Description: The ARN of the CodeStar Connection to GitHub
     Type: String
 
-Resources:
+esources:
+
+  # IAM Role for CodePipeline
+  PipelineExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: CodePipelineFullAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'cloudformation:*'
+                  - 's3:*'
+                  - 'codebuild:*'
+                  - 'codecommit:*'
+                  - 'codedeploy:*'
+                  - 'lambda:*'  # Optional
+                  - 'sns:*'     # Optional
+                  - 'events:*'   # Optional
+                Resource: '*'
   VPCA:
     Type: AWS::EC2::VPC
     Properties:
