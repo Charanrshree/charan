@@ -1,3 +1,4 @@
+AWSTemplateFormatVersion: '2010-09-09'
 Description: VPC Peering Demo
 Parameters:
   LatestAmiId:
