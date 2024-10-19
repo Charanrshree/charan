@@ -8,6 +8,7 @@ Parameters:
   GitHubConnectionArn:
     Description: The ARN of the CodeStar Connection to GitHub
     Type: String
+    Default: "arn:aws:codeconnections:us-east-1:651706782546:connection/bba230b2-da4e-4d36-b8d9-ea24a3e273b0"
 
 Resources:  # Fixed typo here
 
