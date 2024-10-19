@@ -1,0 +1,4 @@
+template-file-path: vpc.yml
+parameters:
+  KeyPair: awslogin
+tags: {}
