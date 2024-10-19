@@ -1,6 +1,4 @@
-
-```bash
-Description:  VPC Peering Demo
+Description: VPC Peering Demo
 Parameters:
   LatestAmiId:
     Description: AMI for Bastion Host (default is latest AmaLinux2)
@@ -93,6 +91,7 @@ Resources:
       GroupId: !Ref VPCBSecurityGroup
       IpProtocol: '-1'
       SourceSecurityGroupId: !Ref VPCBSecurityGroup
+
   PrivateEC2A:
     Type: AWS::EC2::Instance
     DependsOn: 
@@ -233,5 +232,12 @@ Resources:
       ProviderType: 'GitHub'
       ConnectionArn: !Ref GitHubConnectionArn
 
-
- ```
+  # Add CodePipeline for deployment from GitHub
+  MyPipeline:
+    Type: 'AWS::CodePipeline::Pipeline'
+    Properties:
+      Name: !Sub 'Pipeline-${AWS::StackName}'
+      RoleArn: !GetAtt PipelineExecutionRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Sub 'my-pipeline-artifacts-${AWS::Region}-${AWS::AccountId}' 
