@@ -6,6 +6,10 @@ Parameters:
     Description: AMI for Bastion Host (default is latest AmaLinux2)
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+  GitHubConnectionArn:
+    Description: The ARN of the CodeStar Connection to GitHub
+    Type: String
+
 Resources:
   VPCA:
     Type: AWS::EC2::VPC
@@ -220,7 +224,14 @@ Resources:
         - !Ref VPCASecurityGroup
       ServiceName: !Sub com.amazonaws.${AWS::Region}.ssmmessages
       VpcId: !Ref VPCA
- 
+
+  # GitHub Connection for CloudFormation
+  GitHubConnection:
+    Type: 'AWS::CodeStarConnections::Connection'
+    Properties:
+      ConnectionName: !Sub 'GitHubConnection-${AWS::StackName}'
+      ProviderType: 'GitHub'
+      ConnectionArn: !Ref GitHubConnectionArn
 
 
  ```
