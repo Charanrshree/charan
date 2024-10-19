@@ -10,8 +10,23 @@ Parameters:
       - t2.micro
       - t2.small
       - t2.medium
+  LatestAmiId:
+    Description: AMI for the EC2 Instance
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
 
 Resources:
+  # The Wait Condition Handle
+  GitSyncSetupWaitConditionHandle:
+    Type: 'AWS::CloudFormation::WaitConditionHandle'
+
+  # The Wait Condition
+  GitSyncSetupWaitCondition:
+    Type: 'AWS::CloudFormation::WaitCondition'
+    Properties:
+      Handle: !Ref GitSyncSetupWaitConditionHandle
+      Timeout: '300'  # Wait for 300 seconds (5 minutes)
+      Count: '1'      # Number of signals to expect
 
   # Create a VPC
   MyVPC:
@@ -79,7 +94,14 @@ Resources:
     Type: 'AWS::EC2::Instance'
     Properties:
       InstanceType: !Ref InstanceType
-      ImageId: ami-0c55b159cbfafe1f0  # Amazon Linux 2 AMI ID (us-east-1)
+      ImageId: !Ref LatestAmiId  # Ensure you define this parameter
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # Your setup commands here
+          # Send a signal to the WaitCondition
+          /usr/bin/aws cloudformation signal-resource --stack-name ${AWS::StackName} --logical-resource-id GitSyncSetupWaitCondition --unique-id $(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+      DependsOn: GitSyncSetupWaitConditionHandle  # Ensure the Wait Condition is created first
       SubnetId: !Ref PublicSubnet
       SecurityGroupIds:
         - !Ref InstanceSecurityGroup
