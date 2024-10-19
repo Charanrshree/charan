@@ -9,7 +9,7 @@ Parameters:
     Description: The ARN of the CodeStar Connection to GitHub
     Type: String
 
-esources:
+Resources:  # Fixed typo here
 
   # IAM Role for CodePipeline
   PipelineExecutionRole:
@@ -38,6 +38,8 @@ esources:
                   - 'sns:*'     # Optional
                   - 'events:*'   # Optional
                 Resource: '*'
+                
+  # Define VPCs and subnets
   VPCA:
     Type: AWS::EC2::VPC
     Properties:
@@ -153,6 +155,7 @@ esources:
       Tags:
         - Key: Name
           Value: EC2-VPC-B  
+          
   EC2Role:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -213,12 +216,14 @@ esources:
                 Action:
                   - 'sns:*'
                 Resource: '*'
+                
   EC2InstanceProfile:
     Type: 'AWS::IAM::InstanceProfile'
     Properties:
       Path: /
       Roles:
         - !Ref EC2Role
+        
   ssminterfaceendpoint:
     Type: AWS::EC2::VPCEndpoint
     Properties:
@@ -230,6 +235,7 @@ esources:
         - !Ref VPCASecurityGroup
       ServiceName: !Sub com.amazonaws.${AWS::Region}.ssm
       VpcId: !Ref VPCA
+      
   ssmec2messagesinterfaceendpoint:
     Type: AWS::EC2::VPCEndpoint
     Properties:
@@ -237,36 +243,4 @@ esources:
       PrivateDnsEnabled: "True"
       SubnetIds:
         - !Ref SubnetA
-      SecurityGroupIds:
-        - !Ref VPCASecurityGroup
-      ServiceName: !Sub com.amazonaws.${AWS::Region}.ec2messages
-      VpcId: !Ref VPCA
-  ssmmessagesinterfaceendpoint:
-    Type: AWS::EC2::VPCEndpoint
-    Properties:
-      VpcEndpointType: "Interface"
-      PrivateDnsEnabled: "True"
-      SubnetIds:
-        - !Ref SubnetA
-      SecurityGroupIds:
-        - !Ref VPCASecurityGroup
-      ServiceName: !Sub com.amazonaws.${AWS::Region}.ssmmessages
-      VpcId: !Ref VPCA
-
-  # GitHub Connection for CloudFormation
-  GitHubConnection:
-    Type: 'AWS::CodeStarConnections::Connection'
-    Properties:
-      ConnectionName: !Sub 'GitHubConnection-${AWS::StackName}'
-      ProviderType: 'GitHub'
-      ConnectionArn: !Ref GitHubConnectionArn
-
-  # Add CodePipeline for deployment from GitHub
-  MyPipeline:
-    Type: 'AWS::CodePipeline::Pipeline'
-    Properties:
-      Name: !Sub 'Pipeline-${AWS::StackName}'
-      RoleArn: !GetAtt PipelineExecutionRole.Arn
-      ArtifactStore:
-        Type: S3
-        Location: !Sub 'my-pipeline-artifacts-${AWS::Region}-${AWS::AccountId}' 
+     
